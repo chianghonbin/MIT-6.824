@@ -59,9 +59,8 @@ func doMap(
 	for reduceTaskNumber, reduceKVs := range kvsHashed {
 		debug("doMap save intermediate files for reduce task %v ", reduceTaskNumber)
 		reduceFileName := reduceName(jobName, mapTaskNumber, reduceTaskNumber)
-		var file *os.File
-
-		if file, err := os.Create(reduceFileName); err != nil {
+		file, err := os.Create(reduceFileName)
+		if err != nil {
 			log.Fatal("doMap create intermediate file:", err)
 		}
 		defer file.Close()

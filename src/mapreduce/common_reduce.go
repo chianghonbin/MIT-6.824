@@ -43,8 +43,8 @@ func doReduce(
 	for index := range inFiles {
 		debug("reduce task %v proceeds map task[%v]'s  intermediate file", reduceTaskNumber, index)
 		inFiles[index] = reduceName(jobName, index, reduceTaskNumber)
-		var inFile *os.File
-		if inFile, err := os.Open(inFiles[index]); err != nil {
+		inFile, err := os.Open(inFiles[index])
+		if err != nil {
 			log.Fatal("open reduce input file :", err)
 		}
 		defer inFile.Close()
@@ -62,8 +62,8 @@ func doReduce(
 
 	}
 	outFileName := mergeName(jobName, reduceTaskNumber)
-	var outFile *os.File
-	if outFile, err := os.Create(outFileName); err != nil {
+	outFile, err := os.Create(outFileName)
+	if err != nil {
 		log.Fatal("create reduce task out file: ", err)
 	}
 	defer outFile.Close()
