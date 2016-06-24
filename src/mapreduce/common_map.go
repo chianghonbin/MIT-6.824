@@ -49,14 +49,14 @@ func doMap(
 	if err != nil {
 		log.Fatal("doMap read:", err)
 	}
-	kvPairs := mapF(inFile, string(fileContents))
-	kvPairsHashed := make([][]KeyValue, nReduce)
-	for _, kv := range kvPairs {
-		reduceTaskNumber := int(ihash(kv.key)) % nReduce
-		kvPairsHashed[reduceTaskNumber] = append(kvPairsHashed[reduceTaskNumber], kv)
+	kvs := mapF(inFile, string(fileContents))
+	kvsHashed := make([][]KeyValue, nReduce)
+	for _, kv := range kvs {
+		reduceTaskNumber := int(ihash(kv.Key)) % nReduce
+		kvsHashed[reduceTaskNumber] = append(kvsHashed[reduceTaskNumber], kv)
 	}
 
-	for reduceTaskNumber, reduceKVPair := range kvPairsHashed {
+	for reduceTaskNumber, reduceKVs := range kvsHashed {
 		debug("doMap save intermediate files for reduce task %v ", reduceTaskNumber)
 		reduceFileName := reduceName(jobName, mapTaskNumber, reduceTaskNumber)
 		var file *os.File
@@ -66,7 +66,7 @@ func doMap(
 		}
 		defer file.Close()
 		enc := json.NewEncoder(file)
-		for _, kv := range reduceKVPair {
+		for _, kv := range reduceKVs {
 			if err := enc.Encode(kv); err != nil {
 				log.Fatal("Encode :", err)
 			}
