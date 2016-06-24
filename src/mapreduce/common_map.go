@@ -52,7 +52,7 @@ func doMap(
 	kvPairs := mapF(inFile, string(fileContents))
 	kvPairsHashed := make([][]KeyValue, nReduce)
 	for _, kv := range kvPairs {
-		reduceTaskNumber := int(ihash(kv)) % nReduce
+		reduceTaskNumber := int(ihash(kv.key)) % nReduce
 		kvPairsHashed[reduceTaskNumber] = append(kvPairsHashed[reduceTaskNumber], kv)
 	}
 
