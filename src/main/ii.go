@@ -16,7 +16,7 @@ func mapF(document string, value string) (res []mapreduce.KeyValue) {
 	words := re.FindAllString(value, -1)
 	words_uni := make(map[string]bool)
 	for _, word := range words {
-		if _, ok = words_uni[word]; ok == false {
+		if _, ok := words_uni[word]; ok == false {
 			words_uni[word] = true
 		}
 	}
