@@ -24,5 +24,33 @@ func (mr *Master) schedule(phase jobPhase) {
 	//
 	// TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
 	//
+
+	job_finished := make([]bool, ntasks)
+	for i := 0; i < ntasks; i += 1 {
+		job_finished[i] = false
+	}
+	for {
+		all_finished := true
+		for i := 0; i < ntasks; i += 1 {
+			if job_finished[i] {
+				continue
+			}
+			all_finished = false
+			go func(w string, task int) {
+				debug("calling worker %v for task %v\n", w, task)
+				ok := call(w, "Worker.DoTask", &DoTaskArgs{mr.jobName, mr.files[task], phase, task, nios}, &struct{}{})
+				if ok {
+					debug("Worker %v finished task %v\n", w, task)
+					job_finished[task] = true
+					mr.registerChannel <- w
+				} else {
+					debug("Worker %v failes task %v \n", w, task)
+				}
+			}(<-mr.registerChannel, i)
+		}
+		if all_finished {
+			break
+		}
+	}
 	fmt.Printf("Schedule: %v phase done\n", phase)
 }
